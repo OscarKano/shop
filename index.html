@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Sneaker Flow — витрина</title>
+<!-- Мини-витрина в Telegram (scripts/build_showcase.py кладёт рядом catalog.json и img/). Внутри Telegram берёт его
+     цвета темы и кнопку «Назад»; «Заказать» открывает бот-каталог (/start o<id>_<размер>) — заявка как из каталога. -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #ffffff; --text: #111418; --hint: #8a9099; --card: #f3f4f6; --line: #e6e8eb;
+    --accent: #2f7cf6; --accent-text: #ffffff; --badge: #ff4d4f; --shadow: 0 6px 24px rgba(0,0,0,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17191d; --text: #f1f3f5; --hint: #8f97a3; --card: #23262c; --line: #2e3238; --shadow: 0 6px 24px rgba(0,0,0,.4); }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  body.locked { overflow: hidden; }
+  button, select, input { font: inherit; color: inherit; }
+
+  header { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 14px 8px;
+    border-bottom: 1px solid var(--line); }
+  .brandline { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+  .logo { font-weight: 800; font-size: 19px; letter-spacing: .2px; }
+  .count { color: var(--hint); font-size: 13px; }
+  .search { position: relative; }
+  .search input { width: 100%; border: 0; outline: 0; background: var(--card); border-radius: 12px;
+    padding: 10px 36px 10px 36px; font-size: 16px; }
+  .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); opacity: .5; }
+  .search .clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none;
+    font-size: 18px; color: var(--hint); padding: 4px 8px; display: none; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 2px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 12px;
+    font-size: 14px; white-space: nowrap; }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .selects { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding-top: 8px; }
+  .selects select { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px;
+    padding: 7px 8px; font-size: 13px; appearance: none; -webkit-appearance: none; }
+  .selects select.on { border-color: var(--accent); color: var(--accent); }
+
+  main { padding: 12px 12px 90px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .card { background: var(--card); border-radius: 14px; overflow: hidden; cursor: pointer; position: relative; border: 0;
+    padding: 0; text-align: left; }
+  .card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; background: var(--line); }
+  .card .info { padding: 8px 10px 10px; }
+  .card .name { font-weight: 600; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; min-height: 2.7em; }
+  .card .color { color: var(--hint); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px; gap: 6px; }
+  .card .price { font-weight: 800; font-size: 15px; white-space: nowrap; }
+  .card .sz { color: var(--hint); font-size: 12px; white-space: nowrap; }
+  .badge { position: absolute; top: 8px; left: 8px; background: var(--badge); color: #fff; font-size: 11px; font-weight: 700;
+    padding: 3px 7px; border-radius: 6px; letter-spacing: .3px; }
+  .badge.w { left: auto; right: 8px; background: rgba(255,255,255,.92); color: #1b6fd1; }
+  .empty { text-align: center; color: var(--hint); padding: 40px 10px; }
+  .empty a { display: inline-block; margin-top: 14px; }
+  .note { color: var(--hint); font-size: 12.5px; text-align: center; padding: 18px 8px 0; line-height: 1.5; }
+  a.btn, button.btn { display: block; width: 100%; text-align: center; text-decoration: none; border: 0; border-radius: 12px;
+    padding: 13px; font-weight: 700; font-size: 16px; background: var(--accent); color: var(--accent-text); cursor: pointer; }
+  button.btn:disabled { opacity: .45; cursor: default; }
+  .btn.ghost { background: var(--card); color: var(--text); font-weight: 600; }
+
+  /* карточка модели */
+  #sheet { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow-y: auto; display: none;
+    -webkit-overflow-scrolling: touch; }
+  #sheet.open { display: block; animation: up .18s ease-out; }
+  @keyframes up { from { transform: translateY(24px); opacity: .4; } to { transform: none; opacity: 1; } }
+  .close { position: fixed; top: 10px; right: 10px; z-index: 22; width: 36px; height: 36px; border-radius: 50%; border: 0;
+    background: rgba(0,0,0,.45); color: #fff; font-size: 20px; line-height: 36px; text-align: center; cursor: pointer; }
+  body.tg .close { display: none; }  /* в Telegram — его кнопка «Назад» */
+  .gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; background: var(--card); }
+  .gallery::-webkit-scrollbar { display: none; }
+  .gallery img { flex: none; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; scroll-snap-align: center; display: block; }
+  .dots { display: flex; justify-content: center; gap: 6px; padding: 8px 0 0; }
+  .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--accent); }
+  .body { padding: 12px 16px 130px; }
+  .body h1 { font-size: 21px; margin: 4px 0 2px; line-height: 1.2; }
+  .body .sub { color: var(--hint); margin-bottom: 8px; }
+  .body .bigprice { font-size: 24px; font-weight: 800; margin: 6px 0 14px; }
+  .label { font-weight: 700; margin: 14px 0 8px; }
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .size { min-width: 58px; border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; padding: 7px 8px 5px;
+    text-align: center; cursor: pointer; }
+  .size b { display: block; font-size: 16px; }
+  .size small { color: var(--hint); font-size: 11px; }
+  .size.on { border-color: var(--accent); background: var(--accent); color: var(--accent-text); }
+  .size.on small { color: var(--accent-text); opacity: .85; }
+  .help { display: inline-block; margin-top: 10px; color: var(--accent); background: none; border: 0; padding: 4px 0;
+    font-size: 14px; cursor: pointer; }
+  .about { margin-top: 16px; line-height: 1.5; }
+  .about ul { padding: 0; margin: 8px 0 0; list-style: none; }
+  .about li { margin: 5px 0; }
+  .trust { margin-top: 16px; background: var(--card); border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.6; }
+  .buy { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--bg); border-top: 1px solid var(--line); }
+  .buy .hint { text-align: center; color: var(--hint); font-size: 12.5px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brandline"><div class="logo">👟 Sneaker Flow</div><div class="count" id="count"></div></div>
+  <div class="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="Бренд, модель, цвет или размер" autocomplete="off" enterkeyhint="search">
+    <button class="clear" id="clear" aria-label="Очистить">×</button>
+  </div>
+  <div class="chips" id="tabs"></div>
+  <div class="selects">
+    <select id="brand"></select>
+    <select id="size"></select>
+    <select id="sort">
+      <option value="new">Сначала новые</option>
+      <option value="cheap">Сначала дешёвые</option>
+      <option value="exp">Сначала дорогие</option>
+    </select>
+  </div>
+</header>
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden></div>
+  <div class="note">🛡 Оплата через Авито — деньги под защитой до получения<br>🚚 Доставка в пункт выдачи или курьером · 📦 Каждая пара в коробке</div>
+</main>
+
+<div id="sheet" role="dialog" aria-modal="true">
+  <button class="close" id="x" aria-label="Закрыть">×</button>
+  <div id="sheetBody"></div>
+</div>
+
+<script>
+const tg = window.Telegram && Telegram.WebApp && Telegram.WebApp.platform && Telegram.WebApp.platform !== "unknown" ? Telegram.WebApp : null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rub = n => n.toLocaleString("ru-RU") + " ₽";
+const norm = s => String(s || "").toLowerCase().replace(/ё/g, "е");
+const range = s => !s.length ? "" : (s.length > 2 && s[s.length - 1] - s[0] === s.length - 1 ? `${s[0]}–${s[s.length - 1]}` : s.join("/"));
+
+let D = {models: []}, aliases = [];
+const st = {tab: "all", brand: "", size: "", sort: "new", q: ""};
+const TABS = [["all", "Все"], ["new", "🆕 Новинки"], ["men", "👨 Мужские"], ["women", "👩 Женские"],
+              ["winter", "❄️ Зимние"], ["cheap", "💸 До 4 000 ₽"]];
+
+if (tg) {
+  document.body.classList.add("tg");
+  tg.ready(); tg.expand();
+  const applyTheme = () => {
+    const p = tg.themeParams || {}, r = document.documentElement.style;
+    if (p.bg_color) { r.setProperty("--bg", p.bg_color); }
+    if (p.text_color) r.setProperty("--text", p.text_color);
+    if (p.hint_color) r.setProperty("--hint", p.hint_color);
+    if (p.secondary_bg_color) r.setProperty("--card", p.secondary_bg_color);
+    if (p.button_color) r.setProperty("--accent", p.button_color);
+    if (p.button_text_color) r.setProperty("--accent-text", p.button_text_color);
+    if (p.section_separator_color) r.setProperty("--line", p.section_separator_color);
+    try { tg.setHeaderColor("bg_color"); tg.setBackgroundColor("bg_color"); } catch (e) {}
+  };
+  applyTheme(); tg.onEvent("themeChanged", applyTheme);
+  tg.BackButton.onClick(() => closeSheet());
+}
+
+fetch("catalog.json?" + Date.now()).then(r => r.json()).then(data => {
+  D = data;
+  aliases = Object.entries(D.aliases || {}).sort((a, b) => b[0].length - a[0].length);
+  D.models.forEach(m => {
+    m.hay = norm([m.model, m.color, m.brand, m.gender === "female" ? "женские" : "мужские", m.winter ? "зимние зима теплые" : ""].join(" "));
+  });
+  setup(); render();
+  const start = tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param;  // ссылка вида ?startapp=m123 — сразу модель
+  const deep = (start || location.hash.slice(1)).match(/^m(\d+)$/);
+  if (deep) { const m = D.models.find(x => x.id === +deep[1]); if (m) openSheet(m); }
+}).catch(() => { $("empty").hidden = false; $("empty").textContent = "Не удалось загрузить каталог — попробуйте позже."; });
+
+function setup() {
+  $("tabs").innerHTML = TABS.map(([k, t]) => `<button class="chip${k === st.tab ? " on" : ""}" data-k="${k}">${t}</button>`).join("");
+  $("tabs").onclick = e => { const b = e.target.closest(".chip"); if (!b) return; st.tab = b.dataset.k; setup(); render(); };
+  const brands = Object.entries(D.models.reduce((a, m) => (m.brand && (a[m.brand] = (a[m.brand] || 0) + 1), a), {}))
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  $("brand").innerHTML = `<option value="">Все бренды</option>` + brands.map(([b, n]) => `<option value="${esc(b)}">${esc(b)} · ${n}</option>`).join("");
+  const sizes = [...new Set(D.models.flatMap(m => m.sizes))].sort((a, b) => a - b);
+  $("size").innerHTML = `<option value="">Любой размер</option>` + sizes.map(s => `<option value="${s}">Размер ${s}</option>`).join("");
+  $("brand").value = st.brand; $("size").value = st.size; $("sort").value = st.sort;
+  for (const id of ["brand", "size", "sort"]) $(id).onchange = e => { st[id] = e.target.value; render(); };
+  $("q").oninput = e => { st.q = e.target.value; $("clear").style.display = st.q ? "block" : "none"; render(); };
+  $("clear").onclick = () => { $("q").value = ""; st.q = ""; $("clear").style.display = "none"; render(); };
+  $("x").onclick = closeSheet;
+}
+
+function parseQuery(q) {
+  let s = " " + norm(q) + " ";
+  for (const [ru, en] of aliases) s = s.split(" " + ru + " ").join(" " + en + " ");
+  const words = [], sizes = [];
+  for (const w of s.split(/[\s,]+/).filter(Boolean)) {
+    if (/^\d+$/.test(w) && +w >= 35 && +w <= 48) sizes.push(+w); else if (w.length > 1 || /\d/.test(w)) words.push(w);
+  }
+  return {words, sizes};
+}
+
+function filtered() {
+  const {words, sizes} = parseQuery(st.q);
+  let list = D.models.filter(m =>
+    (st.tab === "all" || (st.tab === "new" && m.new) || (st.tab === "men" && m.gender !== "female") ||
+     (st.tab === "women" && m.gender === "female") || (st.tab === "winter" && m.winter) ||
+     (st.tab === "cheap" && m.price <= (D.budget || 4000))) &&
+    (!st.brand || m.brand === st.brand) && (!st.size || m.sizes.includes(+st.size)) &&
+    sizes.every(s => m.sizes.includes(s)) &&
+    words.every(w => /^\d+$/.test(w) ? new RegExp(`(^|\\D)${w}(\\D|$)`).test(m.hay) : m.hay.includes(w)));
+  const by = {new: (a, b) => b.date.localeCompare(a.date) || b.id - a.id, cheap: (a, b) => a.price - b.price, exp: (a, b) => b.price - a.price};
+  return list.sort(by[st.sort]);
+}
+
+function render() {
+  const list = filtered();
+  $("count").textContent = list.length === D.models.length ? `${D.models.length} моделей` : `${list.length} из ${D.models.length}`;
+  ["brand", "size"].forEach(id => $(id).classList.toggle("on", !!st[id]));
+  $("grid").innerHTML = list.map(m => `
+    <button class="card" data-id="${m.id}">
+      <img src="${m.thumb}" alt="" loading="lazy" decoding="async">
+      ${m.new ? '<span class="badge">NEW</span>' : ""}${m.winter ? '<span class="badge w">❄️</span>' : ""}
+      <div class="info">
+        <div class="name">${esc(m.model)}</div>
+        <div class="color">${esc(m.color || " ")}</div>
+        <div class="row"><span class="price">${rub(m.price)}</span><span class="sz">${range(m.sizes)}</span></div>
+      </div>
+    </button>`).join("");
+  const empty = $("empty");
+  empty.hidden = list.length > 0;
+  if (!list.length) {
+    const ask = encodeURIComponent(`Здравствуйте! Ищу: ${st.q || "кроссовки"}. Есть что-то похожее?`);
+    empty.innerHTML = `Ничего не нашли 😔<br>Попробуйте другой фильтр — или спросите менеджера, подскажем.<br>
+      <a class="btn ghost" href="https://t.me/${D.manager}?text=${ask}" style="max-width:280px;margin:14px auto 0">💬 Спросить менеджера</a>`;
+  }
+}
+$("grid").onclick = e => { const c = e.target.closest(".card"); if (c) openSheet(D.models.find(m => m.id === +c.dataset.id)); };
+
+let cur = null, chosen = null;
+function openSheet(m) {
+  cur = m; chosen = null;
+  const photos = m.photos.map((p, i) => `<img src="${p}" alt="" ${i ? 'loading="lazy"' : ""} decoding="async">`).join("");
+  const dots = m.photos.length > 1 ? `<div class="dots" id="dots">${m.photos.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("")}</div>` : "";
+  const sizes = m.sizes.map(s => `<button class="size" data-s="${s}"><b>${s}</b>${m.cm[s] ? `<small>${m.cm[s]} см</small>` : ""}</button>`).join("");
+  $("sheetBody").innerHTML = `
+    <div class="gallery" id="gal">${photos}</div>${dots}
+    <div class="body">
+      <h1>${esc(m.model)}</h1>
+      <div class="sub">${esc([m.color, m.gender === "female" ? "женские" : "", m.winter ? "❄️ на холодную погоду" : ""].filter(Boolean).join(" · "))}</div>
+      <div class="bigprice">${rub(m.price)}</div>
+      <div class="label">Размер</div>
+      <div class="sizes" id="sizes">${sizes || '<span class="sub">уточните у менеджера</span>'}</div>
+      <button class="help" id="dunno">🤔 Не знаю размер — помогите подобрать</button>
+      ${m.intro || m.bullets.length ? `<div class="about">${esc(m.intro)}${m.bullets.length ? `<ul>${m.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}</div>` : ""}
+      <div class="trust">🛡 Покупка через Авито — деньги под защитой, пока не получите пару<br>🚚 Доставка в пункт выдачи или курьером<br>💬 Менеджер подтвердит наличие размера</div>
+    </div>
+    <div class="buy"><button class="btn" id="order" disabled>Выберите размер</button>
+      <div class="hint">Откроется чат — сообщение для менеджера уже будет набрано</div></div>`;
+  const gal = $("gal");
+  if (dots) gal.onscroll = () => { const i = Math.round(gal.scrollLeft / gal.clientWidth); [...$("dots").children].forEach((d, k) => d.classList.toggle("on", k === i)); };
+  $("sizes").onclick = e => {
+    const b = e.target.closest(".size"); if (!b) return;
+    chosen = +b.dataset.s;
+    [...$("sizes").children].forEach(x => x.classList.toggle("on", x === b));
+    const o = $("order"); o.disabled = false; o.textContent = `Заказать · ${chosen} · ${rub(m.price)}`;
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+  };
+  $("order").onclick = () => chosen && order(m, chosen);
+  $("dunno").onclick = () => order(m, 0);
+  $("sheet").classList.add("open"); $("sheet").scrollTop = 0; document.body.classList.add("locked");
+  if (tg) tg.BackButton.show(); else history.pushState({sheet: 1}, "");
+}
+function closeSheet() {
+  $("sheet").classList.remove("open"); document.body.classList.remove("locked"); cur = null;
+  if (tg) tg.BackButton.hide();
+}
+window.onpopstate = () => { if (cur) closeSheet(); };
+
+function order(m, size) {
+  // заявку оформляет бот-каталог: уведомит владельца и откроет чат с менеджером с готовым сообщением
+  const url = `https://t.me/${D.bot}?start=o${m.id}_${size}`;
+  if (tg) { tg.openTelegramLink(url); setTimeout(() => tg.close(), 300); } else location.href = url;
+}
+</script>
+</body>
+</html>
