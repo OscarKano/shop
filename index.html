@@ -7,6 +7,9 @@
 <!-- Мини-витрина в Telegram (scripts/build_showcase.py кладёт рядом catalog.json и img/). Внутри Telegram берёт его
      цвета темы и кнопку «Назад»; «Заказать» открывает бот-каталог (/start o<id>_<размер>) — заявка как из каталога. -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #ffffff; --text: #111418; --hint: #8a9099; --card: #f3f4f6; --line: #e6e8eb;
@@ -17,7 +20,10 @@
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
-    font: 15px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    font: 500 15px/1.35 "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  /* на широком экране — колонка по центру, а не на весь монитор (06.10: карточки растягивались на пол-экрана) */
+  header > *, main { max-width: 1080px; margin-left: auto; margin-right: auto; }
   body.locked { overflow: hidden; }
   button, select, input { font: inherit; color: inherit; }
 
@@ -38,23 +44,28 @@
     font-size: 14px; white-space: nowrap; }
   .chip.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .selects { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding-top: 8px; }
+  @media (min-width: 700px) { .selects { grid-template-columns: repeat(3, 200px); } }
   .selects select { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px;
     padding: 7px 8px; font-size: 13px; appearance: none; -webkit-appearance: none; }
   .selects select.on { border-color: var(--accent); color: var(--accent); }
 
   main { padding: 12px 12px 90px; }
-  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  @media (min-width: 640px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* карточка не шире ~200 px: на телефоне 2 в ряд, на компьютере 5–6 */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 12px; }
+  @media (min-width: 700px) { .grid { grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 16px; } }
   .card { background: var(--card); border-radius: 14px; overflow: hidden; cursor: pointer; position: relative; border: 0;
-    padding: 0; text-align: left; }
+    padding: 0; text-align: left; font-family: inherit; transition: transform .12s ease, box-shadow .12s ease; }
+  @media (hover: hover) { .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); } }
   .card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; background: var(--line); }
-  .card .info { padding: 8px 10px 10px; }
-  .card .name { font-weight: 600; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden; min-height: 2.7em; }
-  .card .color { color: var(--hint); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px; gap: 6px; }
-  .card .price { font-weight: 800; font-size: 15px; white-space: nowrap; }
-  .card .sz { color: var(--hint); font-size: 12px; white-space: nowrap; }
+  .card { display: flex; flex-direction: column; }
+  .card .info { padding: 8px 10px 10px; display: flex; flex-direction: column; flex: 1; }
+  .card .name { font-weight: 700; font-size: 13.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden; letter-spacing: -.1px; }
+  .card .color { color: var(--hint); font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* цена — к низу карточки: короткое название не оставляет пустую строку перед цветом, а ряд цен ровный */
+  .card .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: auto; padding-top: 6px; gap: 6px; }
+  .card .price { font-weight: 800; font-size: 15px; white-space: nowrap; letter-spacing: -.2px; }
+  .card .sz { color: var(--hint); font-size: 11.5px; white-space: nowrap; }
   .badge { position: absolute; top: 8px; left: 8px; background: var(--badge); color: #fff; font-size: 11px; font-weight: 700;
     padding: 3px 7px; border-radius: 6px; letter-spacing: .3px; }
   .badge.w { left: auto; right: 8px; background: rgba(255,255,255,.92); color: #1b6fd1; }
@@ -101,6 +112,13 @@
   .buy { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
     background: var(--bg); border-top: 1px solid var(--line); }
   .buy .hint { text-align: center; color: var(--hint); font-size: 12.5px; margin-top: 6px; }
+  /* на компьютере карточка модели — колонка по центру, а не фото во весь монитор */
+  #sheetBody > *, .buy > * { max-width: 520px; margin-left: auto; margin-right: auto; }
+  @media (min-width: 700px) {
+    #sheet { background: rgba(0,0,0,.55); }
+    #sheetBody { max-width: 520px; margin: 24px auto; background: var(--bg); border-radius: 18px; overflow: hidden; }
+    .buy { left: 50%; right: auto; width: 520px; transform: translateX(-50%); border-radius: 18px 18px 0 0; }
+  }
 </style>
 </head>
 <body>
@@ -116,9 +134,9 @@
     <select id="brand"></select>
     <select id="size"></select>
     <select id="sort">
-      <option value="new">Сначала новые</option>
-      <option value="cheap">Сначала дешёвые</option>
-      <option value="exp">Сначала дорогие</option>
+      <option value="new">Новые</option>
+      <option value="cheap">Дешевле</option>
+      <option value="exp">Дороже</option>
     </select>
   </div>
 </header>
