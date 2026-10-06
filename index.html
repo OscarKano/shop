@@ -89,8 +89,16 @@
   .gallery::-webkit-scrollbar { display: none; }
   .gallery img { flex: none; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; scroll-snap-align: center; display: block; }
   .dots { display: flex; justify-content: center; gap: 6px; padding: 8px 0 0; }
-  .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); cursor: pointer; }
   .dots i.on { background: var(--accent); }
+  /* стрелки по фото — для мыши (на телефоне листают свайпом) */
+  .galwrap { position: relative; }
+  .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; border: 0;
+    background: rgba(255,255,255,.88); color: #111; font-size: 22px; line-height: 38px; text-align: center; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.25); display: none; padding: 0; }
+  .nav.prev { left: 10px; } .nav.next { right: 10px; }
+  .nav[hidden] { display: none !important; }
+  @media (hover: hover) { .nav { display: block; } }
   .body { padding: 12px 16px 130px; }
   .body h1 { font-size: 21px; margin: 4px 0 2px; line-height: 1.2; }
   .body .sub { color: var(--hint); margin-bottom: 8px; }
@@ -256,14 +264,24 @@ function render() {
 }
 $("grid").onclick = e => { const c = e.target.closest(".card"); if (c) openSheet(D.models.find(m => m.id === +c.dataset.id)); };
 
-let cur = null, chosen = null;
+let cur = null, chosen = null, sheetKeys = null;
+document.addEventListener("keydown", e => {
+  if (!cur) return;
+  if (e.key === "Escape") closeSheet(); else if (sheetKeys) sheetKeys(e);
+});
+// ряд вкладок прокручивается и колесом мыши (на узком окне не все влезают)
+document.getElementById("tabs").addEventListener("wheel", e => {
+  const t = e.currentTarget;
+  if (t.scrollWidth > t.clientWidth && Math.abs(e.deltaY) > Math.abs(e.deltaX)) { t.scrollLeft += e.deltaY; e.preventDefault(); }
+}, {passive: false});
 function openSheet(m) {
   cur = m; chosen = null;
   const photos = m.photos.map((p, i) => `<img src="${p}" alt="" ${i ? 'loading="lazy"' : ""} decoding="async">`).join("");
   const dots = m.photos.length > 1 ? `<div class="dots" id="dots">${m.photos.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("")}</div>` : "";
   const sizes = m.sizes.map(s => `<button class="size" data-s="${s}"><b>${s}</b>${m.cm[s] ? `<small>${m.cm[s]} см</small>` : ""}</button>`).join("");
+  const arrows = m.photos.length > 1 ? `<button class="nav prev" id="prev" aria-label="Назад" hidden>‹</button><button class="nav next" id="next" aria-label="Дальше">›</button>` : "";
   $("sheetBody").innerHTML = `
-    <div class="gallery" id="gal">${photos}</div>${dots}
+    <div class="galwrap"><div class="gallery" id="gal">${photos}</div>${arrows}</div>${dots}
     <div class="body">
       <h1>${esc(m.model)}</h1>
       <div class="sub">${esc([m.color, m.gender === "female" ? "женские" : "", m.winter ? "❄️ на холодную погоду" : ""].filter(Boolean).join(" · "))}</div>
@@ -277,7 +295,32 @@ function openSheet(m) {
     <div class="buy"><button class="btn" id="order" disabled>Выберите размер</button>
       <div class="hint">Откроется чат — сообщение для менеджера уже будет набрано</div></div>`;
   const gal = $("gal");
-  if (dots) gal.onscroll = () => { const i = Math.round(gal.scrollLeft / gal.clientWidth); [...$("dots").children].forEach((d, k) => d.classList.toggle("on", k === i)); };
+  if (dots) {
+    const n = m.photos.length;
+    const go = i => gal.scrollTo({left: Math.max(0, Math.min(n - 1, i)) * gal.clientWidth, behavior: "smooth"});
+    const idx = () => Math.round(gal.scrollLeft / gal.clientWidth);
+    gal.onscroll = () => {
+      const i = idx();
+      [...$("dots").children].forEach((d, k) => d.classList.toggle("on", k === i));
+      $("prev").hidden = i <= 0; $("next").hidden = i >= n - 1;
+    };
+    $("prev").onclick = () => go(idx() - 1);
+    $("next").onclick = () => go(idx() + 1);
+    $("dots").onclick = e => { const k = [...$("dots").children].indexOf(e.target); if (k >= 0) go(k); };
+    // колесо мыши над фото листает фото (по одному за прокрутку), а не страницу
+    let lock = 0;
+    gal.onwheel = e => {
+      const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (!d) return;
+      const i = idx(), to = i + (d > 0 ? 1 : -1);
+      if (to < 0 || to > n - 1) return;  // на первом/последнем фото колесо крутит страницу дальше
+      e.preventDefault();
+      if (Date.now() - lock < 350) return;
+      lock = Date.now(); go(to);
+    };
+    gal.tabIndex = 0;
+    sheetKeys = e => { if (e.key === "ArrowRight") go(idx() + 1); if (e.key === "ArrowLeft") go(idx() - 1); };
+  } else sheetKeys = null;
   $("sizes").onclick = e => {
     const b = e.target.closest(".size"); if (!b) return;
     chosen = +b.dataset.s;
