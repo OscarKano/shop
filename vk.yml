@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yml_catalog date="2026-10-20 17:54">
+<yml_catalog date="2026-10-20 19:54">
   <shop>
     <name>Sneaker Flow</name>
     <company>Sneaker Flow</company>
@@ -438,6 +438,7 @@
       <price>3990</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_merrell_gore-tex_chernye_zimnie_41-46_8318270918</url>
       <picture>https://oscarkano.github.io/shop/img/19_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/19_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/19_3.jpg</picture>
@@ -607,7 +608,6 @@
       <price>4190</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
-      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_new_balance_574_gore-tex_serye_41-46_8318177815</url>
       <picture>https://oscarkano.github.io/shop/img/25_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/25_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/25_3.jpg</picture>
@@ -15144,6 +15144,88 @@
       <picture>https://oscarkano.github.io/shop/img/832_5.jpg</picture>
       <vendor>New Balance</vendor>
       <description>New Balance 574 с мехом в тёмно-сером цвете со светло-серыми вставками и белыми шнурками.
+
+Почему стоит брать:
+🧸 Внутри мех
+👟 Классический силуэт 574 с логотипом N
+⚪ Белая подошва и белые шнурки
+📦 Приходят в фирменной коробке
+
+📏 Размеры:
+41 — 26 см
+42 — 26.5 см
+43 — 27.5 см
+44 — 28 см
+45 — 29 см
+46 — 29.5 см
+Уточните размер — напишите длину стельки в сантиметрах.
+
+📦 КАК КУПИТЬ:
+Напишите размер
+Подтверждаю наличие
+Оформляем через Авито Доставку и отправляем
+
+🚚 Доставка: Почта России / СДЭК / DPD / Яндекс Доставка / Авито / 5Post
+
+🔄 Возврат: брак — пересылку оплачиваем мы. Не подошёл — оплачивает покупатель.
+
+👟 Все модели и новинки каждый день — в нашем Telegram: https://t.me/+LWMC5QUGvE0xZjcy
+Вопросы — в сообщения группы.</description>
+    </offer>
+    <offer id="sf-c833" available="true">
+      <name>Кроссовки New Balance 574 коричневые 41-46</name>
+      <price>4590</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_new_balance_574_korichnevye_41-46_8328433669</url>
+      <picture>https://oscarkano.github.io/shop/img/833_1.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/833_2.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/833_3.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/833_4.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/833_5.jpg</picture>
+      <vendor>New Balance</vendor>
+      <description>New Balance 574 с мехом в коричневом цвете с чёрными вставками.
+
+Почему стоит брать:
+🧸 Внутри мех
+👟 Классический силуэт 574 с логотипом N
+🤎 Коричневый цвет с чёрными акцентами
+📦 Приходят в фирменной коробке
+
+📏 Размеры:
+41 — 26 см
+42 — 26.5 см
+43 — 27.5 см
+44 — 28 см
+45 — 29 см
+46 — 29.5 см
+Уточните размер — напишите длину стельки в сантиметрах.
+
+📦 КАК КУПИТЬ:
+Напишите размер
+Подтверждаю наличие
+Оформляем через Авито Доставку и отправляем
+
+🚚 Доставка: Почта России / СДЭК / DPD / Яндекс Доставка / Авито / 5Post
+
+🔄 Возврат: брак — пересылку оплачиваем мы. Не подошёл — оплачивает покупатель.
+
+👟 Все модели и новинки каждый день — в нашем Telegram: https://t.me/+LWMC5QUGvE0xZjcy
+Вопросы — в сообщения группы.</description>
+    </offer>
+    <offer id="sf-c834" available="true">
+      <name>Кроссовки New Balance 574 тёмно-синие 41-46</name>
+      <price>4590</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_new_balance_574_temno-sinie_41-46_8422959444</url>
+      <picture>https://oscarkano.github.io/shop/img/834_1.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/834_2.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/834_3.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/834_4.jpg</picture>
+      <picture>https://oscarkano.github.io/shop/img/834_5.jpg</picture>
+      <vendor>New Balance</vendor>
+      <description>New Balance 574 с мехом в тёмно-синем цвете с серыми вставками и белыми шнурками.
 
 Почему стоит брать:
 🧸 Внутри мех
