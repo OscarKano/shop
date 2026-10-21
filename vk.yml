@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yml_catalog date="2026-10-21 20:44">
+<yml_catalog date="2026-10-21 22:54">
   <shop>
     <name>Sneaker Flow</name>
     <company>Sneaker Flow</company>
@@ -15418,6 +15418,7 @@
       <price>4590</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_ecco_ult-trn_zheltye_41-46_8410283172</url>
       <picture>https://oscarkano.github.io/shop/img/876_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/876_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/876_3.jpg</picture>
