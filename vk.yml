@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yml_catalog date="2026-10-24 16:14">
+<yml_catalog date="2026-10-26 03:43">
   <shop>
     <name>Sneaker Flow</name>
     <company>Sneaker Flow</company>
@@ -15,7 +15,6 @@
       <price>3990</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
-      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_nike_air_jordan_11_chernye_41-45_8318530879</url>
       <picture>https://oscarkano.github.io/shop/img/12_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/12_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/12_3.jpg</picture>
@@ -181,7 +180,6 @@
       <price>4590</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
-      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_maison_margiela_replica_chernye_41-45_8317980328</url>
       <picture>https://oscarkano.github.io/shop/img/10_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/10_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/10_3.jpg</picture>
@@ -223,7 +221,6 @@
       <price>4590</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
-      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_maison_margiela_replica_sine-serye_41-45_8318731401</url>
       <picture>https://oscarkano.github.io/shop/img/11_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/11_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/11_3.jpg</picture>
@@ -3818,7 +3815,6 @@
       <price>3990</price>
       <currencyId>RUR</currencyId>
       <categoryId>2</categoryId>
-      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_nb_9060_sero-rozovye_zhenskie_37-41_8307972321</url>
       <picture>https://oscarkano.github.io/shop/img/157_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/157_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/157_3.jpg</picture>
