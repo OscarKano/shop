@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yml_catalog date="2026-10-26 03:43">
+<yml_catalog date="2026-10-26 05:53">
   <shop>
     <name>Sneaker Flow</name>
     <company>Sneaker Flow</company>
@@ -10,11 +10,12 @@
       <category id="2">Женские кроссовки</category>
     </categories>
     <offers>
-    <offer id="sf-c12" available="true">
+    <offer id="sf-c12-r1" available="true">
       <name>Кроссовки Nike Air Jordan 11 чёрные 41-45</name>
       <price>3990</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_nike_air_jordan_11_chernye_41-45_8445467365</url>
       <picture>https://oscarkano.github.io/shop/img/12_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/12_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/12_3.jpg</picture>
@@ -180,6 +181,7 @@
       <price>4590</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_maison_margiela_replica_chernye_41-45_8317980328</url>
       <picture>https://oscarkano.github.io/shop/img/10_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/10_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/10_3.jpg</picture>
@@ -216,11 +218,12 @@
 👟 Все модели и новинки каждый день — в нашем Telegram: https://t.me/+LWMC5QUGvE0xZjcy
 Вопросы — в сообщения группы.</description>
     </offer>
-    <offer id="sf-c11" available="true">
+    <offer id="sf-c11-r1" available="true">
       <name>Кроссовки Maison Margiela Replica сине-серые 41-45</name>
       <price>4590</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_maison_margiela_replica_sine-serye_41-45_8400386797</url>
       <picture>https://oscarkano.github.io/shop/img/11_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/11_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/11_3.jpg</picture>
