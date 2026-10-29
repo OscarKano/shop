@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yml_catalog date="2026-10-29 14:04">
+<yml_catalog date="2026-10-29 16:14">
   <shop>
     <name>Sneaker Flow</name>
     <company>Sneaker Flow</company>
@@ -17334,6 +17334,7 @@
       <price>4290</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_nike_dunk_low_korichnevye_41-45_8400418474</url>
       <picture>https://oscarkano.github.io/shop/img/1062_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/1062_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/1062_3.jpg</picture>
