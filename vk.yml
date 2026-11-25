@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yml_catalog date="2026-11-25 02:45">
+<yml_catalog date="2026-11-25 04:45">
   <shop>
     <name>Sneaker Flow</name>
     <company>Sneaker Flow</company>
@@ -15,6 +15,7 @@
       <price>3990</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_nike_air_jordan_11_chernye_41-45_8445467365</url>
       <picture>https://oscarkano.github.io/shop/img/12_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/12_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/12_3.jpg</picture>
@@ -221,6 +222,7 @@
       <price>4590</price>
       <currencyId>RUR</currencyId>
       <categoryId>1</categoryId>
+      <url>https://www.avito.ru/moskva/odezhda_obuv_aksessuary/krossovki_maison_margiela_replica_sine-serye_41-45_8400386797</url>
       <picture>https://oscarkano.github.io/shop/img/11_1.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/11_2.jpg</picture>
       <picture>https://oscarkano.github.io/shop/img/11_3.jpg</picture>
